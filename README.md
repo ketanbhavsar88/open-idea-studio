@@ -84,3 +84,7 @@ More detail, including tests, is in [docs/local-development.md](docs/local-devel
 ## License
 
 [Apache-2.0](LICENSE). Model weights and third-party services have their own terms.
+
+## Hackathon demo
+
+[Watch the demo video](https://drive.google.com/file/d/1HhppLXuc4XIwKOz06lX3xPjpkFO-RKXy/view?usp=sharing)
