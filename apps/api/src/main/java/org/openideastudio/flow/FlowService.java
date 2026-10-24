@@ -253,7 +253,7 @@ public class FlowService {
     }
 
     private static ArtifactData flowData(String description, FlowGraph graph, String origin) {
-        return new ArtifactData(description, null, null, null, null, null, null, null, null, null, null, origin, graph);
+        return new ArtifactData(description, null, null, null, null, null, null, null, null, null, null, origin, graph, null);
     }
 
     private static Set<String> linkedRequirements(FlowGraph graph) {

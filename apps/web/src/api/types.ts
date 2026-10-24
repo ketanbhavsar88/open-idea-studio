@@ -52,6 +52,7 @@ export type ArtifactType =
   | 'suggestion'
   | 'summary'
   | 'flow'
+  | 'prototype'
 
 /** Allowed statuses per type; mirrors ArtifactType.java. */
 export const ARTIFACT_STATUSES: Record<ArtifactType, string[]> = {
@@ -63,6 +64,7 @@ export const ARTIFACT_STATUSES: Record<ArtifactType, string[]> = {
   suggestion: ['proposed', 'accepted', 'rejected'],
   summary: ['ai-generated', 'edited'],
   flow: ['draft', 'approved', 'archived'],
+  prototype: ['draft', 'approved'],
 }
 
 export const REQUIREMENT_CATEGORIES = [
@@ -88,6 +90,7 @@ export interface ArtifactData {
   problem?: string | null
   origin?: 'user' | 'ai' | null
   graph?: FlowGraph | null
+  prototype?: PrototypeSpec | null
 }
 
 export interface Artifact {
@@ -202,4 +205,78 @@ export interface FlowSaveResult {
 export interface FlowProposal {
   changeSet: ChangeSet
   preview: FlowGraph
+}
+
+// --- Prototype (mirrors org.openideastudio.prototype) ---
+
+export type Tone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
+
+export interface PrototypeAction {
+  type: 'navigate' | 'message' | 'setState'
+  target?: string | null
+  message?: string | null
+  key?: string | null
+  value?: string | null
+}
+
+export interface FormField {
+  name: string
+  label: string
+  inputType: 'text' | 'number' | 'date' | 'email' | 'select' | 'textarea' | 'checkbox'
+  options?: string[] | null
+  required?: boolean | null
+  placeholder?: string | null
+}
+
+export type PrototypeComponent =
+  | { type: 'header'; text: string; subtitle?: string | null }
+  | { type: 'text'; text: string; variant?: 'body' | 'caption' | 'heading' | null }
+  | { type: 'alert'; text: string; tone?: Tone | null }
+  | { type: 'badge'; text: string; tone?: Tone | null }
+  | { type: 'button'; label: string; variant?: 'primary' | 'secondary' | 'danger' | null; action: PrototypeAction }
+  | { type: 'card'; title?: string | null; body?: string | null; children?: PrototypeComponent[] | null }
+  | {
+      type: 'list'
+      items: {
+        title: string
+        subtitle?: string | null
+        meta?: string | null
+        badge?: string | null
+        action?: PrototypeAction | null
+      }[]
+    }
+  | { type: 'table'; columns: string[]; rows: string[][] }
+  | { type: 'form'; fields: FormField[]; submitLabel: string; action: PrototypeAction }
+  | { type: 'tabs'; tabs: { label: string; children: PrototypeComponent[] }[] }
+  | {
+      type: 'dialog'
+      triggerLabel: string
+      title: string
+      body?: string | null
+      confirmLabel: string
+      action: PrototypeAction
+    }
+  | { type: 'image'; alt: string }
+  | { type: 'conditional'; key: string; equals: string; children: PrototypeComponent[] }
+
+export interface PrototypeScreen {
+  id: string
+  title: string
+  description?: string | null
+  requirementKeys?: string[] | null
+  components: PrototypeComponent[]
+}
+
+export interface PrototypeSpec {
+  title: string
+  startScreen: string
+  initialState?: Record<string, string> | null
+  screens: PrototypeScreen[]
+  schemaVersion?: number | null
+}
+
+export interface PrototypeDraft {
+  spec: PrototypeSpec
+  warnings: string[]
+  screenId: string | null
 }

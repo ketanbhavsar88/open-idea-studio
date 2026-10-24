@@ -5,6 +5,8 @@ import type {
   FlowGraph,
   FlowProposal,
   FlowSaveResult,
+  PrototypeDraft,
+  PrototypeSpec,
   ConversationMessage,
   CreateArtifactRequest,
   CreateProjectRequest,
@@ -115,6 +117,24 @@ export const api = {
     ),
   rejectChangeSet: (projectId: string, id: string) =>
     request<ChangeSet>(`/api/v1/projects/${projectId}/changesets/${id}/reject`, { method: 'POST' }),
+
+  getPrototype: (projectId: string) =>
+    request<{ prototype: Artifact | null }>(`/api/v1/projects/${projectId}/prototype`),
+  savePrototype: (projectId: string, body: { spec: PrototypeSpec; version: number | null; fromAi: boolean }) =>
+    request<{ prototype: Artifact; warnings: string[] }>(`/api/v1/projects/${projectId}/prototype`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  generatePrototype: (projectId: string, instruction?: string) =>
+    request<PrototypeDraft>(`/api/v1/projects/${projectId}/prototype/generate`, {
+      method: 'POST',
+      body: JSON.stringify({ instruction: instruction || null }),
+    }),
+  proposeScreen: (projectId: string, screenId: string, instruction: string) =>
+    request<PrototypeDraft>(
+      `/api/v1/projects/${projectId}/prototype/screens/${encodeURIComponent(screenId)}/propose`,
+      { method: 'POST', body: JSON.stringify({ instruction }) },
+    ),
 
   retryReply: (projectId: string) =>
     request<TurnResult>(`/api/v1/projects/${projectId}/messages/retry`, { method: 'POST' }),

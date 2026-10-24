@@ -45,8 +45,8 @@ public class ArtifactService {
         if (type == ArtifactType.SUMMARY) {
             throw new BadRequestException("The summary is maintained by discovery; edit it instead.");
         }
-        if (type == ArtifactType.FLOW) {
-            throw new BadRequestException("Create flows with the flows API so the graph is validated.");
+        if (type == ArtifactType.FLOW || type == ArtifactType.PROTOTYPE) {
+            throw new BadRequestException("Create " + type.id() + "s with their own API so they are validated.");
         }
         String status = request.status() == null ? type.initialStatus() : request.status();
         requireStatus(type, status);
@@ -65,8 +65,8 @@ public class ArtifactService {
         if (current.version() != request.version()) {
             throw new ConflictException("This item was changed elsewhere. Reload it and apply your edit again.");
         }
-        if (current.type() == ArtifactType.FLOW && request.data() != null) {
-            throw new BadRequestException("Edit a flow's graph with PUT /flows/{key} so it is validated.");
+        if ((current.type() == ArtifactType.FLOW || current.type() == ArtifactType.PROTOTYPE) && request.data() != null) {
+            throw new BadRequestException("Edit a " + current.type().id() + " with its own API so it is validated.");
         }
         String status = request.status() == null ? current.status() : request.status();
         requireStatus(current.type(), status);

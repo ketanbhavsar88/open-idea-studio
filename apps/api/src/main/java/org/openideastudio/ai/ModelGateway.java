@@ -41,6 +41,11 @@ public class ModelGateway {
         this.strictJson = json.rebuild().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
     }
 
+    /** The strict JSON mapper used for model output, also handy for putting JSON into prompts. */
+    public JsonMapper json() {
+        return strictJson;
+    }
+
     public ModelProvider provider() {
         return provider;
     }

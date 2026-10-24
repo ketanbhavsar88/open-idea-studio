@@ -52,7 +52,8 @@ public class ProjectRepository {
                        count(*) FILTER (WHERE a.type = 'requirement' AND a.status = 'confirmed') AS confirmed_requirements,
                        count(*) FILTER (WHERE a.type = 'question' AND a.status = 'open')         AS open_questions,
                        count(*) FILTER (WHERE a.type = 'flow')                                     AS flows,
-                       count(*) FILTER (WHERE a.type = 'screen')                                   AS screens
+                       coalesce(sum(jsonb_array_length(a.data -> 'prototype' -> 'screens'))
+                           FILTER (WHERE a.type = 'prototype'), 0)                       AS screens
                 FROM project p
                 LEFT JOIN artifact a ON a.project_id = p.id
                 GROUP BY p.id

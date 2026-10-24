@@ -19,7 +19,8 @@ public enum ArtifactType {
     RISK("risk", "RISK", "open", List.of("open", "mitigated", "accepted", "dismissed")),
     SUGGESTION("suggestion", "SUG", "proposed", List.of("proposed", "accepted", "rejected")),
     SUMMARY("summary", "SUMMARY", "ai-generated", List.of("ai-generated", "edited")),
-    FLOW("flow", "FLOW", "draft", List.of("draft", "approved", "archived"));
+    FLOW("flow", "FLOW", "draft", List.of("draft", "approved", "archived")),
+    PROTOTYPE("prototype", "PROTOTYPE", "draft", List.of("draft", "approved"));
 
     private final String id;
     private final String prefix;

@@ -114,7 +114,7 @@ public class ConversationService {
             DiscoveryTurn.IdeaSummary summary = turn.ideaSummary();
             String key = artifacts.upsertSummary(projectId, "Idea summary", new ArtifactData(
                     summary.summary(), null, null, null, null, null, null, null, null,
-                    summary.targetUsers(), summary.problem(), null, null));
+                    summary.targetUsers(), summary.problem(), null, null, null));
             if (key != null) {
                 changed.add(key);
             }
@@ -128,7 +128,7 @@ public class ConversationService {
                         ArtifactData d = q.data();
                         artifactRepository.update(projectId, q.key(), q.title(), "answered", new ArtifactData(
                                 d.description(), null, null, null, null, null, answered.answer(), d.why(),
-                                d.options(), null, null, d.origin(), null));
+                                d.options(), null, null, d.origin(), null, null));
                         changed.add(q.key());
                     });
         }
@@ -137,13 +137,13 @@ public class ConversationService {
         for (DiscoveryTurn.Proposal p : turn.proposals()) {
             proposals.add(new ArtifactService.NewArtifact(ArtifactType.from(p.type()), p.title().strip(),
                     new ArtifactData(p.description(), p.category(), p.priority(), p.acceptanceCriteria(),
-                            p.rationale(), p.impact(), null, null, null, null, null, null, null)));
+                            p.rationale(), p.impact(), null, null, null, null, null, null, null, null)));
         }
         String questionKey = null;
         if (turn.nextQuestion() != null) {
             DiscoveryTurn.NextQuestion q = turn.nextQuestion();
             proposals.add(new ArtifactService.NewArtifact(ArtifactType.QUESTION, q.text().strip(),
-                    new ArtifactData(null, null, null, null, null, null, null, q.why(), q.options(), null, null, null, null)));
+                    new ArtifactData(null, null, null, null, null, null, null, q.why(), q.options(), null, null, null, null, null)));
         }
         List<Artifact> created = artifacts.addProposals(projectId, proposals);
         created.forEach(a -> changed.add(a.key()));
