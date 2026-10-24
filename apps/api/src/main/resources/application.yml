@@ -1,0 +1,46 @@
+# Values come from environment variables, or from infra/.env when the API is
+# started from apps/api (the same file docker compose uses).
+spring:
+  application:
+    name: open-idea-studio-api
+  config:
+    import: optional:file:../../infra/.env[.properties]
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:ideastudio}
+    username: ${POSTGRES_USER:ideastudio}
+    password: ${POSTGRES_PASSWORD:}
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: ${API_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+# AI provider. Secrets come only from the environment / infra/.env and never
+# reach the browser. See docs/ai-providers.md.
+ai:
+  provider: ${AI_PROVIDER:gemini}          # gemini | ollama | fake
+  timeout-seconds: ${AI_TIMEOUT_SECONDS:60}
+  max-retries: ${AI_MAX_RETRIES:2}         # extra attempts after invalid JSON output
+  min-interval-ms: ${AI_MIN_INTERVAL_MS:4000}  # backend throttle between model calls
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemma-4-26b-a4b-it}
+    supports-system-prompt: ${GEMINI_SUPPORTS_SYSTEM_PROMPT:true}
+  ollama:
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_MODEL:gemma3:4b}
+  # Optional per-operation model override, e.g. AI_MODEL_DISCOVERY_TURN=gemini-2.5-flash
+  operation-models:
+    discovery-turn: ${AI_MODEL_DISCOVERY_TURN:}
+    generate-flow: ${AI_MODEL_GENERATE_FLOW:}
+    propose-flow-change: ${AI_MODEL_PROPOSE_FLOW_CHANGE:}
