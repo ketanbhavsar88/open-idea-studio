@@ -44,3 +44,5 @@ ai:
     discovery-turn: ${AI_MODEL_DISCOVERY_TURN:}
     generate-flow: ${AI_MODEL_GENERATE_FLOW:}
     propose-flow-change: ${AI_MODEL_PROPOSE_FLOW_CHANGE:}
+    generate-prototype: ${AI_MODEL_GENERATE_PROTOTYPE:}
+    propose-screen: ${AI_MODEL_PROPOSE_SCREEN:}

@@ -10,7 +10,7 @@ export function useArtifacts(projectId: string) {
 export function useInvalidateProject(projectId: string) {
   const queryClient = useQueryClient()
   return () => {
-    for (const key of ['artifacts', 'revisions', 'project', 'messages', 'flows']) {
+    for (const key of ['artifacts', 'revisions', 'project', 'messages', 'flows', 'prototype']) {
       queryClient.invalidateQueries({ queryKey: [key, projectId] })
     }
     queryClient.invalidateQueries({ queryKey: ['projects'] })

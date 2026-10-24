@@ -19,7 +19,7 @@ Notes:
 - **Rate limits:** the free tier has tight per-minute limits. The API spaces calls by `AI_MIN_INTERVAL_MS` (default 4 s) and reports HTTP 429 as a "rate limited" state in the UI; your message is kept and can be retried.
 - **System prompt:** Gemma 4 accepts system instructions. For older Gemma models set `GEMINI_SUPPORTS_SYSTEM_PROMPT=false`; the instructions are then sent as the first user turn.
 - **Structured output:** native JSON-schema mode is not used for Gemma. The schema is in the prompt; replies are stripped of code fences, parsed strictly (unknown fields rejected), validated, and retried up to `AI_MAX_RETRIES` times with the errors.
-- **Per-operation models:** `AI_MODEL_DISCOVERY_TURN`, `AI_MODEL_GENERATE_FLOW` and `AI_MODEL_PROPOSE_FLOW_CHANGE` override the model for one operation (for example a larger Gemma or a Gemini model for flow edits, which need more careful reasoning).
+- **Per-operation models:** `AI_MODEL_DISCOVERY_TURN`, `AI_MODEL_GENERATE_FLOW`, `AI_MODEL_PROPOSE_FLOW_CHANGE`, `AI_MODEL_GENERATE_PROTOTYPE` and `AI_MODEL_PROPOSE_SCREEN` override the model for one operation (for example a larger Gemma or a Gemini model for flow edits, which need more careful reasoning).
 
 ## Ollama
 
@@ -38,8 +38,10 @@ Then `AI_PROVIDER=ollama` (and `OLLAMA_MODEL` if different). Small local models 
 | `discovery-turn` | `DiscoveryTurn`: reply, idea summary, next question, proposals | Saved immediately as **unconfirmed** artifacts |
 | `generate-flow` | `GeneratedFlow`: nodes with refs, edges, requirement links | Saved as a new **draft** flow (only when you click Generate) |
 | `propose-flow-change` | `FlowChangeProposal`: summary + graph operations | Stored as a **pending change set**; applied only when you approve |
+| `generate-prototype` | `PrototypeSpec`: screens of constrained components | Returned as an **unsaved draft** you click through, then save or discard |
+| `propose-screen` | One `PrototypeSpec.Screen` | Unsaved draft with only that screen replaced |
 
-With `AI_PROVIDER=fake`, each operation returns a canned, labelled demo response; flow change proposals contain no operations.
+With `AI_PROVIDER=fake`, each operation returns a canned, labelled demo response; flow change proposals contain no operations, and prototype drafts are a fixed two-screen demo.
 
 ## What the model can and cannot do
 

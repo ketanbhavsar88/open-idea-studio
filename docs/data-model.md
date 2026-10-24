@@ -47,8 +47,9 @@ Defined in `ArtifactType.java` (mirrored in `apps/web/src/api/types.ts`); the fi
 - risk: `open`, `mitigated`, `accepted`, `dismissed`
 - summary: `ai-generated`, `edited` (single artifact, key `SUMMARY`)
 - flow: `draft`, `approved`, `archived`
+- prototype: `draft`, `approved` (single artifact, key `PROTOTYPE`)
 
-`data` (`ArtifactData.java`) holds `description`, `category`, `priority`, `acceptanceCriteria`, `rationale`, `impact`, `answer`, `why`, `options`, `targetUsers`, `problem`, `origin` (`user` or `ai`), and `graph` (flows only).
+`data` (`ArtifactData.java`) holds `description`, `category`, `priority`, `acceptanceCriteria`, `rationale`, `impact`, `answer`, `why`, `options`, `targetUsers`, `problem`, `origin` (`user` or `ai`), `graph` (flows only), and `prototype` (the prototype only).
 
 ## Flow graph (`data.graph`, `schemaVersion: 1`)
 
@@ -89,3 +90,42 @@ Stored in `proposed_change_set.operations`, already resolved (IDs and positions 
 | `removeEdge` | `edgeId` |
 
 A change set applies only if the flow's `version` still equals `target_artifact_version`; otherwise it becomes `stale`.
+
+## Prototype spec (`data.prototype`, `schemaVersion: 1`)
+
+The prototype is plain data rendered by trusted components (`apps/web/src/prototype/renderer.tsx`). It cannot contain HTML, URLs, images, or code.
+
+```json
+{
+  "title": "Vehicle sharing",
+  "startScreen": "browse-vehicles",
+  "initialState": { "bookingStatus": "none" },
+  "screens": [
+    {
+      "id": "browse-vehicles",
+      "title": "Browse vehicles",
+      "description": null,
+      "requirementKeys": ["REQ-RENTERS-REQUEST-BOOKINGS"],
+      "components": [
+        { "type": "list", "items": [
+          { "title": "Compact hatchback", "subtitle": "2 km away", "meta": "$8/h",
+            "action": { "type": "navigate", "target": "request-booking" } } ] }
+      ]
+    }
+  ],
+  "schemaVersion": 1
+}
+```
+
+**Components:** `header`, `text`, `alert`, `badge`, `button`, `card` (children), `list`, `table`, `form` (fields: text, number, date, email, select, textarea, checkbox), `tabs` (children), `dialog`, `image` (grey placeholder, `alt` only), `conditional` (children shown while `state[key] == equals`). Text may contain `{state.key}`.
+
+**Actions** (all simulated, in the browser only):
+- `navigate` with `target`.
+- `message` with `message`, shown as "Simulated: …".
+- `setState` with `key`, `value` and an optional `target`.
+
+**Errors (block saving):** unknown component or action types, unknown fields, duplicate screen IDs, a missing start screen, navigation to unknown screens, links to unknown requirements, nesting deeper than 4, or more than 80 components per screen. Limits: 12 screens and 30 top-level components per screen.
+
+**Warnings:** screens that no other screen navigates to.
+
+**Stable screen IDs:** when the AI regenerates the prototype, a screen with an existing ID or title keeps its ID, and navigation is rewritten to match. Saving keeps `implements` links from `PROTOTYPE` to every requirement a screen lists.

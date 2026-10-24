@@ -20,10 +20,10 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import ChatPanel from '../components/ChatPanel'
 import ErrorAlert from '../components/ErrorAlert'
-import NotYetAvailable from '../components/NotYetAvailable'
 import DecisionsSection from './DecisionsSection'
 import FlowsSection from './FlowsSection'
 import OverviewSection from './OverviewSection'
+import PrototypeSection from './PrototypeSection'
 import RequirementsSection from './RequirementsSection'
 import RevisionHistorySection from './RevisionHistorySection'
 
@@ -87,7 +87,7 @@ export default function ProjectWorkspace() {
           {project.isSuccess && <SectionContent section={current} projectId={projectId} />}
         </Box>
 
-        {wide && current !== 'discuss' && current !== 'flows' && (
+        {wide && !['discuss', 'flows', 'prototype'].includes(current) && (
           <Paper
             component="aside"
             aria-label="AI assistant"
@@ -137,6 +137,6 @@ function SectionContent({ section, projectId }: { section: SectionId; projectId:
     case 'flows':
       return <FlowsSection projectId={projectId} />
     case 'prototype':
-      return <NotYetAvailable feature="The prototype preview" phase="Phase 3" />
+      return <PrototypeSection projectId={projectId} />
   }
 }

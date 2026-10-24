@@ -22,6 +22,7 @@ Browser ──► Vite dev server (apps/web) ──/api──► Spring Boot API
 | `artifact` | Requirements, decisions, assumptions, questions, risks, idea summary; stable key generation; status rules |
 | `conversation` | Discovery orchestrator: context building, the `discovery-turn` operation, applying validated output |
 | `flow` | Flow graph schema, validator, pure operation engine, layout; flow service (save, generate, propose, apply) |
+| `prototype` | Prototype spec (sealed component types), validator, AI drafts with stable screen IDs |
 | `changeset` | Pending/applied/rejected/stale proposals tied to an artifact version |
 | `ai` | `ModelProvider` + Gemini/Ollama/Fake, `ModelGateway` (throttle, JSON extraction, validation, retries) |
 | `revision` | Snapshot-based revisions (`RevisionService.record`), revision read API |
@@ -63,6 +64,10 @@ Browser ──► Vite dev server (apps/web) ──/api──► Spring Boot API
 | `GET` | `/api/v1/projects/{id}/changesets/{csId}` | Change set + preview graph |
 | `POST` | `/api/v1/projects/{id}/changesets/{csId}/apply` | 409 `stale-version` if the flow changed since |
 | `POST` | `/api/v1/projects/{id}/changesets/{csId}/reject` | |
+| `GET` | `/api/v1/projects/{id}/prototype` | `{ "prototype": artifact or null }` |
+| `PUT` | `/api/v1/projects/{id}/prototype` | Create (`version: null`) or replace; `fromAi` labels the revision |
+| `POST` | `/api/v1/projects/{id}/prototype/generate` | AI draft of the whole prototype; **not saved** |
+| `POST` | `/api/v1/projects/{id}/prototype/screens/{screenId}/propose` | AI draft with one screen redesigned; **not saved** |
 | `GET` | `/actuator/health` | Liveness/readiness groups enabled |
 
 ## Discovery turn
@@ -78,6 +83,14 @@ Browser ──► Vite dev server (apps/web) ──/api──► Spring Boot API
 - An AI proposal is a list of typed operations, never a replacement graph, so unrelated nodes keep their IDs, positions and your edits. `FlowOperations.apply` is pure and is used for both preview and apply.
 - The frontend canvas (`apps/web/src/flow`) uses React Flow. Undo/redo is local (structural edits and completed drags); nothing persists until **Save**.
 
+## Prototype and preview safety
+
+- The model returns a `PrototypeSpec`, never code. Jackson maps `type` onto a sealed set of component records with unknown fields rejected, so nothing outside the component list can be stored.
+- The web app renders specs with its own MUI components. Strings are React text, so they are escaped and never treated as HTML. There are no links, `src` URLs or event handlers taken from the spec. Actions (navigate, simulated message, set state) run only in the player's local state.
+- Because no generated code runs, the preview renders in the app rather than in an iframe. If dynamic code is ever added, it must move to a sandboxed iframe on a separate origin with a strict CSP (design doc §12).
+- Every preview carries a "PROTOTYPE · simulated data and actions" banner, and every message action shows as "Simulated: …".
+- AI output is always a draft you click through before saving.
+
 ## Planned, not built
 
-Cross-artifact change impact, constrained prototype renderer, revision compare/restore. The workspace UI shows an explicit "not available yet" notice for each.
+Cross-artifact change impact and revision compare/restore (Phase 4).

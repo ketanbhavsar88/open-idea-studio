@@ -6,7 +6,7 @@ Open Idea Studio is an open-source, AI-assisted workspace that helps people take
 
 You describe an idea in plain language. The AI acts as a product discovery facilitator: it summarizes the idea, asks a few focused questions, and helps you record requirements and decisions. From those, the studio generates editable user-flow diagrams and a low-fidelity clickable prototype. You keep refining the project through conversation or by editing things directly.
 
-> **Status:** Phase 2 (flows). Discuss the idea with the AI and review what it proposes, then generate user flows from confirmed requirements and edit them on a canvas. AI flow edits arrive as reviewable proposals you apply or reject. Every change is saved as a revision. The prototype and cross-artifact change impact are not built yet. See [docs/product-design.md](docs/product-design.md) for the full specification.
+> **Status:** Phase 3 (prototype). Discuss the idea with the AI, review what it proposes, generate and edit user flows, and generate a clickable prototype you can test on desktop and mobile widths. Every AI output is reviewable before it is saved, and every change is a revision. Cross-artifact change impact and revision restore (Phase 4) are not built yet. See [docs/product-design.md](docs/product-design.md) for the full specification.
 
 ## Why
 
