@@ -1,0 +1,38 @@
+# Local dependencies for Open Idea Studio.
+#
+#   cp .env.example .env              # then edit values
+#   docker compose up -d              # PostgreSQL only
+#   docker compose --profile local-llm up -d   # also start Ollama (offline fallback)
+#
+# The AI model (Gemma) is called through the hosted Gemini API, so it needs
+# no container. GEMINI_API_KEY in .env is read by the API app, not by compose.
+
+name: open-idea-studio
+
+services:
+  postgres:
+    build:
+      context: ./postgres
+    image: open-idea-studio/postgres:local
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ideastudio}
+      POSTGRES_USER: ${POSTGRES_USER:-ideastudio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  ollama:
+    image: ollama/ollama:0.12.6
+    profiles: ["local-llm"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+
+volumes:
+  postgres-data:
+  ollama-data:
